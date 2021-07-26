@@ -1,29 +1,26 @@
 import { Module } from '@nestjs/common';
+import { EscrowModule } from './escrow/escrow.module';
+import { LocationModule } from './modules/location/location.module';
+import { EthereumBlockModule } from './modules/ethereumBlock.module';
+import { Entities } from './modules/location/models';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { LocationController } from './controllers/location.controller';
-import { City } from './model/city.entity';
-import { Country } from './model/country.entity';
-import { Region } from './model/region.entity';
-import { CityService } from './services/city.service';
-import { CountryService } from './services/country.service';
-import { RegionService } from './services/region.service';
-import dotenv from 'dotenv';
+require('dotenv').config() // eslint-disable-line
 
-dotenv.config();
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.HOST_POSTGRES,
-      port: 5432,
-      username: process.env.USERNAME_POSTGRES,
-      password: process.env.PASSWORD_POSTGRES,
-      database: process.env.DB_POSTGRES,
-      autoLoadEntities: true,
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'root',
+      database: 'test',
+      entities: [...Entities],
+      synchronize: true,
     }),
-    TypeOrmModule.forFeature([Country, Region, City]),
+    LocationModule,
+    EscrowModule,
+    EthereumBlockModule,
   ],
-  controllers: [LocationController],
-  providers: [CountryService, RegionService, CityService],
 })
 export class AppModule {}
