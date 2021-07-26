@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { RatingService } from 'src/services/rating.service';
+import { RatingService } from 'src/modules/rating/rating.service';
 
 @Controller('rating')
 export class RatingController {
