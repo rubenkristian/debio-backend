@@ -135,10 +135,8 @@ describe('UnstakedService', () => {
       .calledWith(CALLED_WITH)
       .mockReturnValue(ES_RESULT);
     
-    unstakedService.handleWaitingUnstaked();
-    await Promise.resolve();
+    await unstakedService.handleWaitingUnstaked();
     expect(queryServiceRequestMock).toHaveBeenCalled();
-    await Promise.resolve();
     expect(elasticsearchServiceMock.update).toHaveBeenCalled();
     expect(retrieveUnstakedAmountMock).not.toHaveBeenCalled();
   });
@@ -190,10 +188,8 @@ describe('UnstakedService', () => {
       .calledWith(CALLED_WITH)
       .mockReturnValue(ES_RESULT);
     
-    unstakedService.handleWaitingUnstaked();
-    await Promise.resolve();
+    await unstakedService.handleWaitingUnstaked();
     expect(queryServiceRequestMock).toHaveBeenCalled();
-    await Promise.resolve();
     expect(retrieveUnstakedAmountMock).toHaveBeenCalled();
   });
 });
