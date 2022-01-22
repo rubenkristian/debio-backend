@@ -1,10 +1,21 @@
-
-import { DateTimeProxy, EthereumService, CachesService, SubstrateService } from '../../src/common'
+import { 
+  DateTimeProxy, 
+  EthereumService, 
+  CachesService, 
+  SubstrateService, 
+  DebioConversionService, 
+  TransactionLoggingService,
+  RewardService,
+  MailerManager
+} from '../../src/common';
 import { Repository } from 'typeorm';
 import { Cache as CacheManager } from 'cache-manager';
 import { File, Bucket } from '@google-cloud/storage';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { MailerService } from '@nestjs-modules/mailer';
+import { CountryService } from '../../src/endpoints/location/country.service';
+import { EscrowService } from '../../src/endpoints/escrow/escrow.service';
+import { StateService } from '../../src/endpoints/location/state.service';
 
 export type MockType<T> = {
     [P in keyof T]?: jest.Mock<{}>; // eslint-disable-line
@@ -80,4 +91,45 @@ export const ethereumServiceMockFactory: () => MockType<EthereumService> = jest.
   getEthersProvider: jest.fn(),
   getContract: jest.fn(),
   getEscrowSmartContract: jest.fn(),
+}));
+
+export const countryServiceMockFactory: () => MockType<CountryService> = jest.fn(() => ({
+  getAll: jest.fn(),
+  getByIso2Code: jest.fn()
+}));
+
+export const stateServiceMockFactory: () => MockType<StateService> = jest.fn(() => ({
+  getAllRegion: jest.fn(),
+  getState: jest.fn()
+}));
+
+export const mailerManagerMockFactory: () => MockType<MailerManager> = jest.fn(() => ({
+  sendCustomerStakingRequestServiceEmail: jest.fn(),
+  sendLabRegistrationEmail: jest.fn()
+}));
+
+export const debioConversionServiceMockFactory: () => MockType<DebioConversionService> = jest.fn(() => ({
+  getExchange: jest.fn()
+}));
+
+export const transactionLoggingServiceMockFactory: () => MockType<TransactionLoggingService> = jest.fn(() => ({
+  create: jest.fn(),
+  updateHash: jest.fn(),
+  getLoggingByOrderId: jest.fn(),
+  getLoggingByHashAndStatus: jest.fn()
+}));
+
+export const escrowServiceMockFactory: () => MockType<EscrowService> = jest.fn(() => ({
+  createOrder: jest.fn(),
+  refundOrder: jest.fn(),
+  cancelOrder: jest.fn(),
+  orderFulfilled: jest.fn(),
+  setOrderPaidWithSubstrate: jest.fn(),
+  forwardPaymentToSeller: jest.fn(),
+}));
+
+export const rewardServiceMockFactory: () => MockType<RewardService> =
+jest.fn(() => ({
+  insert: jest.fn(),
+  getRewardBindingByAccountId: jest.fn()
 }));
