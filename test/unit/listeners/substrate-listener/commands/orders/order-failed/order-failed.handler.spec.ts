@@ -17,7 +17,7 @@ jest.mock('ethers', () => ({
   },
 }));
 
-describe("Order Failed Command Event", () => {
+describe("Order Failed Handler Event", () => {
   let orderFailedHandler: OrderFailedHandler;
   let substrateServiceMock: MockType<SubstrateService>;
   let escrowServiceMock: MockType<EscrowService>;
@@ -86,7 +86,7 @@ describe("Order Failed Command Event", () => {
     expect(orderFailedHandler).toBeDefined();
   });
 
-  it("should not called logging service create", async () => {
+  it("should called refunded order if failed", async () => {
     // Arrange
     const refundedOrderSpy = jest.spyOn(ordersCommand, 'refundOrder').mockImplementation();
     const toUtf8StringSpy = jest.spyOn(ethers.utils, 'toUtf8String');

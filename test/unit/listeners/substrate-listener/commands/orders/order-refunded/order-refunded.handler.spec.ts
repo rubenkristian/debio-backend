@@ -17,7 +17,7 @@ jest.mock('ethers', () => ({
   },
 }));
 
-describe("Order Refunded Command Event", () => {
+describe("Order Refunded Handler Event", () => {
   let orderRefundedHandler: OrderRefundedHandler;
   let transactionLoggingServiceMock: MockType<TransactionLoggingService>;
 

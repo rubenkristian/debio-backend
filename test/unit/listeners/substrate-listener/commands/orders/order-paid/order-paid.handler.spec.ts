@@ -2,9 +2,8 @@ import { BlockMetaData } from "../../../../../../../src/listeners/substrate-list
 import { OrderStatus, TransactionLoggingService } from "../../../../../../../src/common";
 import { OrderPaidCommand } from "../../../../../../../src/listeners/substrate-listener/commands/orders";
 import { Test, TestingModule } from "@nestjs/testing";
-import { escrowServiceMockFactory, MockType, transactionLoggingServiceMockFactory } from "../../../../../mock";
+import { MockType, transactionLoggingServiceMockFactory } from "../../../../../mock";
 import { OrderPaidHandler } from "../../../../../../../src/listeners/substrate-listener/commands/orders/order-paid/order-paid.handler";
-import { EscrowService } from "../../../../../../../src/endpoints/escrow/escrow.service";
 import { when } from 'jest-when';
 import { ethers } from 'ethers';
 import { TransactionLoggingDto } from "../../../../../../../src/common/modules/transaction-logging/dto/transaction-logging.dto";
@@ -18,10 +17,9 @@ jest.mock('ethers', () => ({
   },
 }));
 
-describe("Order Paid Command Event", () => {
+describe("Order Paid Handler Event", () => {
   let orderPaidHandler: OrderPaidHandler;
   let transactionLoggingServiceMock: MockType<TransactionLoggingService>;
-  let escrowServiceMock: MockType<EscrowService>;
 
 	function createMockOrder(status: OrderStatus) {
 		const first_price = {
@@ -68,17 +66,12 @@ describe("Order Paid Command Event", () => {
           provide: TransactionLoggingService,
           useFactory: transactionLoggingServiceMockFactory
 				},
-				{
-          provide: EscrowService,
-          useFactory: escrowServiceMockFactory
-				},
         OrderPaidHandler
       ]
     }).compile();
 
     orderPaidHandler = module.get(OrderPaidHandler);
     transactionLoggingServiceMock = module.get(TransactionLoggingService);
-    escrowServiceMock = module.get(EscrowService);
 
     await module.init();
   });

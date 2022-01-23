@@ -10,7 +10,6 @@ import { when } from 'jest-when';
 import { TransactionLoggingDto } from "../../../../../../../src/common/modules/transaction-logging/dto/transaction-logging.dto";
 import { TransactionRequest } from "../../../../../../../src/common/modules/transaction-logging/models/transaction-request.entity";
 
-import * as ordersCommand from "../../../../../../../src/common/polkadot-provider/command/orders";
 import * as rewardCommand from "../../../../../../../src/common/polkadot-provider/command/rewards";
 import * as userProfileQuery from "../../../../../../../src/common/polkadot-provider/query/user-profile";
 import * as serviceRequestQuery from "../../../../../../../src/common/polkadot-provider/query/service-request";
@@ -25,7 +24,7 @@ jest.mock('ethers', () => ({
   },
 }));
 
-describe("Order Fulfilled Command Event", () => {
+describe("Order Fulfilled Handler Event", () => {
   let orderFulfilledHandler: OrderFulfilledHandler;
   let substrateServiceMock: MockType<SubstrateService>;
   let escrowServiceMock: MockType<EscrowService>;

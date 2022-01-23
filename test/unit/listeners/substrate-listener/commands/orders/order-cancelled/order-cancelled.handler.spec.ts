@@ -17,7 +17,7 @@ jest.mock('ethers', () => ({
   },
 }));
 
-describe("Order Cancelled Command Event", () => {
+describe("Order Cancelled Handler Event", () => {
   let orderCancelledHandler: OrderCancelledHandler;
   let transactionLoggingServiceMock: MockType<TransactionLoggingService>;
   let escrowServiceMock: MockType<EscrowService>;
