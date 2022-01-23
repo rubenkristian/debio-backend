@@ -5,6 +5,7 @@ import { countryServiceMockFactory, debioConversionServiceMockFactory, elasticse
 import { ServiceRequestService } from '../../../../../src/endpoints/substrate-endpoint/services';
 import { CountryService } from '../../../../../src/endpoints/location/country.service';
 import { DebioConversionService } from '../../../../../src/common/modules/debio-conversion/debio-conversion.service';
+import { Country } from 'src/endpoints/location/models/country.entity';
 
 describe('Substrate Indexer Lab Service Unit Tests', () => {
   let serviceRequestService: ServiceRequestService;
@@ -100,23 +101,10 @@ describe('Substrate Indexer Lab Service Unit Tests', () => {
     expect(serviceRequestService).toBeDefined();
   });
 
-  it('should get aggregated by countries', () => {
+  it('should get aggregated by countries return array empty', async () => {
     // Arrange
     const ES_CALLED_WITH = createObjectSearchAggregatedByCountries();
-    const RESULT = [
-      {
-        _source: {
-          request: {
-            status: 'Open',
-            country: 'XX',
-            region: 'XX',
-            city: 'XX',
-            service_category: 'XX',
-            staking_amount: '1'
-          }
-        }
-      }
-    ];
+    const RESULT = [];
     const EXPECTED_RESULT = []
     const ES_RESULT = {
       body: {
@@ -126,18 +114,180 @@ describe('Substrate Indexer Lab Service Unit Tests', () => {
       }
     };
 
+    const EXCHANCE_RESULT = {
+      dbioToDai: 1,
+      dbioToUsd: 1
+    }
+
     when(elasticsearchServiceMock.search)
       .calledWith(ES_CALLED_WITH)
       .mockReturnValue(ES_RESULT);
+
+    exchangeCacheService.getExchange.mockReturnValue(EXCHANCE_RESULT);
+    
+    // Assert
+    expect(
+      await serviceRequestService.getAggregatedByCountries()
+    ).toMatchObject(EXPECTED_RESULT);
+    expect(exchangeCacheService.getExchange).toHaveBeenCalled();
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should get aggregated by countries return array object', async () => {
+    // Arrange
+    const COUNTRY = 'XX';
+    const REGION = 'XX';
+    const CITY = 'XX';
+    const CATEGORY = 'XX';
+    const COUNTRY_NAME = 'string';
+    const ES_CALLED_WITH = createObjectSearchAggregatedByCountries();
+    const RESULT = [
+      {
+        _source: {
+          request: {
+            status: 'Open',
+            country: COUNTRY,
+            region: REGION,
+            city: CITY,
+            service_category: CATEGORY,
+            staking_amount: '1'
+          }
+        }
+      }
+    ];
+    const ES_RESULT = {
+      body: {
+        hits: {
+          hits: RESULT
+        }
+      }
+    };
+
+    const EXCHANCE_RESULT = {
+      dbioToDai: 1,
+      dbioToUsd: 1
+    }
+
+    const RETURN_COUNTRY_SERVICE = {
+      iso2: COUNTRY,
+      name: COUNTRY_NAME
+    }
+    
+    const EXPECTED_RESULT = [
+      {}
+    ];
+
+    when(elasticsearchServiceMock.search)
+      .calledWith(ES_CALLED_WITH)
+      .mockReturnValue(ES_RESULT);
+
+    when(countryServiceMock.getByIso2Code)
+      .calledWith(COUNTRY)
+      .mockReturnValue(RETURN_COUNTRY_SERVICE);
+
+    exchangeCacheService.getExchange.mockReturnValue(EXCHANCE_RESULT);
+    
+    // Assert
+    expect(
+      await serviceRequestService.getAggregatedByCountries()
+    ).toMatchObject(EXPECTED_RESULT);
+    expect(exchangeCacheService.getExchange).toHaveBeenCalled();
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+    expect(countryServiceMock.getByIso2Code).toHaveBeenCalled();
+  });
+
+  it('should get aggregated by countries return array empty by index_not_found_exception', async () => {
+    // Arrange
+    const EXPECTED_RESULT = []
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'index_not_found_exception',
+        },
+      },
+    };
+
+    const EXCHANCE_RESULT = {
+      dbioToDai: 1,
+      dbioToUsd: 1
+    }
+
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+
+    exchangeCacheService.getExchange.mockReturnValue(EXCHANCE_RESULT);
+    
+    // Assert
+    expect(
+      await serviceRequestService.getAggregatedByCountries()
+    ).toMatchObject(EXPECTED_RESULT);
+    expect(exchangeCacheService.getExchange).toHaveBeenCalled();
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should throw error get aggregated by countries', async () => {
+    // Arrange
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'failed',
+        },
+      },
+    };
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+
+    const EXCHANCE_RESULT = {
+      dbioToDai: 1,
+      dbioToUsd: 1
+    }
+
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+
+    exchangeCacheService.getExchange.mockReturnValue(EXCHANCE_RESULT);
     
     // Assert
     expect(
       serviceRequestService.getAggregatedByCountries()
-    ).resolves.toMatchObject(EXPECTED_RESULT);
+    ).rejects.toMatchObject(ERROR_RESULT);
+    expect(exchangeCacheService.getExchange).toHaveBeenCalled();
+    await Promise.resolve();
     expect(elasticsearchServiceMock.search).toHaveBeenCalled();
   });
 
   it('should get by customer id', () => {
+    // Arrange
+    const CUSTOMER_ID = 'XX';
+    const PAGE = 1;
+    const SIZE = 10;
+    const RESULT = [];
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'index_not_found_exception',
+        },
+      },
+    };
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+    
+    // Assert
+    expect(
+      serviceRequestService.getByCustomerId(
+        CUSTOMER_ID,
+        PAGE,
+        SIZE
+      )
+    ).resolves.toMatchObject(RESULT);
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should get by customer id return array empty', () => {
     // Arrange
     const CUSTOMER_ID = 'XX';
     const PAGE = 1;
@@ -173,6 +323,33 @@ describe('Substrate Indexer Lab Service Unit Tests', () => {
         SIZE
       )
     ).resolves.toMatchObject(EXPECTED_RESULT);
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should throw error get by customer id', () => {
+    // Arrange
+    const CUSTOMER_ID = 'XX';
+    const PAGE = 1;
+    const SIZE = 10;
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'failed',
+        },
+      },
+    };
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+    
+    // Assert
+    expect(
+      serviceRequestService.getByCustomerId(
+        CUSTOMER_ID,
+        PAGE,
+        SIZE
+      )
+    ).rejects.toMatchObject(ERROR_RESULT);
     expect(elasticsearchServiceMock.search).toHaveBeenCalled();
   });
 
@@ -214,6 +391,65 @@ describe('Substrate Indexer Lab Service Unit Tests', () => {
         CATEGORY
       )
     ).resolves.toMatchObject(EXPECTED_RESULT);
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should provide request service return array empty', () => {
+    // Arrange
+    const COUNTRY = 'XX';
+    const REGION = 'XX';
+    const CITY = 'XX';
+    const CATEGORY = 'XX';
+    const RESULT = [];
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'index_not_found_exception',
+        },
+      },
+    };
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+    
+    // Assert
+    expect(
+      serviceRequestService.provideRequestService(
+        COUNTRY,
+        REGION,
+        CITY,
+        CATEGORY
+      )
+    ).resolves.toMatchObject(RESULT);
+    expect(elasticsearchServiceMock.search).toHaveBeenCalled();
+  });
+
+  it('should throw error provide request service', () => {
+    // Arrange
+    const COUNTRY = 'XX';
+    const REGION = 'XX';
+    const CITY = 'XX';
+    const CATEGORY = 'XX';
+    const ERROR_RESULT = {
+      body: {
+        error: {
+          type: 'failed',
+        },
+      },
+    };
+    elasticsearchServiceMock.search.mockImplementationOnce(() =>
+      Promise.reject(ERROR_RESULT),
+    );
+    
+    // Assert
+    expect(
+      serviceRequestService.provideRequestService(
+        COUNTRY,
+        REGION,
+        CITY,
+        CATEGORY
+      )
+    ).rejects.toMatchObject(ERROR_RESULT);
     expect(elasticsearchServiceMock.search).toHaveBeenCalled();
   });
 });
