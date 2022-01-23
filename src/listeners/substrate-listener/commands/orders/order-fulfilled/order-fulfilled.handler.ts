@@ -38,7 +38,7 @@ export class OrderFulfilledHandler
     await this.logger.log('Order Fulfilled!');
 
     const order = command.orders;
-
+    
     try {
       const isOrderHasBeenInsert =
         await this.loggingService.getLoggingByHashAndStatus(order.id, 3);
@@ -78,11 +78,12 @@ export class OrderFulfilledHandler
 
       const resp: any = await queryEthAdressByAccountId(
         this.substrateService.api,
-        order['sellerId'],
+        order['seller_id'],
       );
       if ((resp as Option<any>).isNone) {
         return null;
       }
+      
       const labEthAddress = (resp as Option<any>).unwrap().toString();
       const orderByOrderId = await queryOrderDetailByOrderID(
         this.substrateService.api,
@@ -113,8 +114,8 @@ export class OrderFulfilledHandler
         const debioToDai = Number(
           (await this.exchangeCacheService.getExchange())['dbioToDai'],
         );
-        const servicePrice = order['price'][0].value * debioToDai;
-
+        
+        const servicePrice = order['prices'][0].value * debioToDai;
         // Send reward to customer
         await sendRewards(
           this.substrateService.api,
