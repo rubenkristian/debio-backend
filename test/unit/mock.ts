@@ -6,7 +6,8 @@ import {
   DebioConversionService, 
   TransactionLoggingService,
   RewardService,
-  MailerManager
+  MailerManager,
+  OrderStatus
 } from '../../src/common';
 import { Repository } from 'typeorm';
 import { Cache as CacheManager } from 'cache-manager';
@@ -16,6 +17,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { CountryService } from '../../src/endpoints/location/country.service';
 import { EscrowService } from '../../src/endpoints/escrow/escrow.service';
 import { StateService } from '../../src/endpoints/location/state.service';
+import { BlockMetaData } from '../../src/listeners/substrate-listener/models/block-metadata.event-model';
 
 export function mockFunction(args){} // eslint-disable-line
 
@@ -137,3 +139,41 @@ jest.fn(() => ({
   insert: jest.fn(),
   getRewardBindingByAccountId: jest.fn()
 }));
+
+export function createMockOrder(status: OrderStatus) {
+  const first_price = {
+    component: "string", 
+    value: 1
+  };
+  const second_price = {
+    component: "string", 
+    value: 1
+  };
+
+  return {
+    toHuman: jest.fn(
+      () => ({
+        id: "string",
+        serviceId: "string",
+        customerId: "string",
+        customerBoxPublicKey: "string",
+        sellerId: "string",
+        dnaSampleTrackingId: "string",
+        currency: 'XX',
+        prices: [ first_price ],
+        additionalPrices: [ second_price ],
+        status: status,
+        orderFlow: "1",
+        createdAt: "1",
+        updatedAt: "1"
+      })
+    )
+  };
+}
+
+export function mockBlockNumber(): BlockMetaData {
+  return {
+    blockHash: "string",
+    blockNumber: 1,
+  }
+}

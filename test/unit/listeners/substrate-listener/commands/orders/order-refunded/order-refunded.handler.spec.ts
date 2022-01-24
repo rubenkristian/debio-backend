@@ -1,8 +1,7 @@
-import { BlockMetaData } from "../../../../../../../src/listeners/substrate-listener/models/block-metadata.event-model";
 import { OrderStatus, TransactionLoggingService } from "../../../../../../../src/common";
 import { OrderRefundedCommand } from "../../../../../../../src/listeners/substrate-listener/commands/orders";
 import { Test, TestingModule } from "@nestjs/testing";
-import { MockType, transactionLoggingServiceMockFactory } from "../../../../../mock";
+import { createMockOrder, mockBlockNumber, MockType, transactionLoggingServiceMockFactory } from "../../../../../mock";
 import { OrderRefundedHandler } from "../../../../../../../src/listeners/substrate-listener/commands/orders/order-refunded/order-refunded.handler";
 import { when } from 'jest-when';
 import { ethers } from 'ethers';
@@ -20,44 +19,6 @@ jest.mock('ethers', () => ({
 describe("Order Refunded Handler Event", () => {
   let orderRefundedHandler: OrderRefundedHandler;
   let transactionLoggingServiceMock: MockType<TransactionLoggingService>;
-
-	function createMockOrder(status: OrderStatus) {
-		const first_price = {
-			component: "string", 
-			value: 1
-		};
-		const second_price = {
-			component: "string", 
-			value: 1
-		};
-
-		return {
-			toHuman: jest.fn(
-				() => ({
-					id: "string",
-					serviceId: "string",
-					customerId: "string",
-					customerBoxPublicKey: "string",
-					sellerId: "string",
-					dnaSampleTrackingId: "string",
-					currency: 'XX',
-					prices: [ first_price ],
-					additionalPrices: [ second_price ],
-					status: status,
-					orderFlow: "1",
-					createdAt: "1",
-					updatedAt: "1"
-				})
-			)
-		};
-	}
-
-	function mockBlockNumber(): BlockMetaData {
-		return {
-			blockHash: "string",
-			blockNumber: 1,
-		}
-	}
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
