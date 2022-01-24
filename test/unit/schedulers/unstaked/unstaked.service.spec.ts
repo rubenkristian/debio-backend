@@ -1,11 +1,12 @@
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Test, TestingModule } from '@nestjs/testing';
-import { elasticsearchServiceMockFactory, substrateServiceMockFactory, MockType } from '../../mock';
-import { UnstakedService } from '../../../../src/schedulers/unstaked/unstaked.service';
 import {
-  ServiceRequest,
-  SubstrateService
-} from '../../../../src/common';
+  elasticsearchServiceMockFactory,
+  substrateServiceMockFactory,
+  MockType,
+} from '../../mock';
+import { UnstakedService } from '../../../../src/schedulers/unstaked/unstaked.service';
+import { ServiceRequest, SubstrateService } from '../../../../src/common';
 
 import * as serviceRequestQuery from '../../../../src/common/polkadot-provider/query/service-request';
 import * as serviceRequestCommand from '../../../../src/common/polkadot-provider/command/service-request';
@@ -39,7 +40,7 @@ describe('UnstakedService', () => {
       },
       from: 0,
       size: 10,
-    }
+    };
   };
 
   beforeEach(async () => {
@@ -69,8 +70,14 @@ describe('UnstakedService', () => {
   });
 
   it('should not do anything', () => {
-    const queryServiceRequestMock = jest.spyOn(serviceRequestQuery, 'queryServiceRequestById');
-    const retrieveUnstakedAmountMock = jest.spyOn(serviceRequestCommand, 'retrieveUnstakedAmount');
+    const queryServiceRequestMock = jest.spyOn(
+      serviceRequestQuery,
+      'queryServiceRequestById',
+    );
+    const retrieveUnstakedAmountMock = jest.spyOn(
+      serviceRequestCommand,
+      'retrieveUnstakedAmount',
+    );
 
     const ERROR_RESULT = {
       body: {
@@ -82,7 +89,7 @@ describe('UnstakedService', () => {
     elasticsearchServiceMock.search.mockImplementationOnce(() =>
       Promise.reject(ERROR_RESULT),
     );
-    
+
     unstakedService.handleWaitingUnstaked();
     expect(elasticsearchServiceMock.search).toHaveBeenCalled();
     expect(queryServiceRequestMock).not.toHaveBeenCalled();
@@ -90,8 +97,14 @@ describe('UnstakedService', () => {
   });
 
   it('should update index data in elasticsearch', async () => {
-    const queryServiceRequestMock = jest.spyOn(serviceRequestQuery, 'queryServiceRequestById');
-    const retrieveUnstakedAmountMock = jest.spyOn(serviceRequestCommand, 'retrieveUnstakedAmount');
+    const queryServiceRequestMock = jest.spyOn(
+      serviceRequestQuery,
+      'queryServiceRequestById',
+    );
+    const retrieveUnstakedAmountMock = jest.spyOn(
+      serviceRequestCommand,
+      'retrieveUnstakedAmount',
+    );
 
     const CALLED_WITH = createSearchObject();
     const REQUEST_ID = 'string';
@@ -103,8 +116,8 @@ describe('UnstakedService', () => {
               _source: {
                 request: {
                   hash: REQUEST_ID,
-                  unstaked_at: new Date().getTime().toString()
-                }
+                  unstaked_at: new Date().getTime().toString(),
+                },
               },
             },
           ],
@@ -130,7 +143,7 @@ describe('UnstakedService', () => {
     when(queryServiceRequestMock)
       .calledWith(substrateServiceMock.api, REQUEST_ID)
       .mockReturnValue(SUBSTRATE_RESULT);
-    
+
     when(elasticsearchServiceMock.search)
       .calledWith(CALLED_WITH)
       .mockReturnValue(ES_RESULT);
@@ -142,8 +155,14 @@ describe('UnstakedService', () => {
   });
 
   it('should unstakedServiceRequest', async () => {
-    const queryServiceRequestMock = jest.spyOn(serviceRequestQuery, 'queryServiceRequestById');
-    const retrieveUnstakedAmountMock = jest.spyOn(serviceRequestCommand, 'retrieveUnstakedAmount');
+    const queryServiceRequestMock = jest.spyOn(
+      serviceRequestQuery,
+      'queryServiceRequestById',
+    );
+    const retrieveUnstakedAmountMock = jest.spyOn(
+      serviceRequestCommand,
+      'retrieveUnstakedAmount',
+    );
 
     const CALLED_WITH = createSearchObject();
     const REQUEST_ID = 'string';
@@ -156,15 +175,15 @@ describe('UnstakedService', () => {
               _source: {
                 request: {
                   hash: REQUEST_ID,
-                  unstaked_at: (new Date().getTime() - SIX_DAYS).toString()
-                }
+                  unstaked_at: (new Date().getTime() - SIX_DAYS).toString(),
+                },
               },
             },
           ],
         },
       },
     };
-    
+
     const SUBSTRATE_RESULT: ServiceRequest = new ServiceRequest({
       hash: 'string',
       requester_address: 'string',
@@ -179,11 +198,11 @@ describe('UnstakedService', () => {
       updated_at: new Date(),
       unstaked_at: new Date(),
     });
-    
+
     when(queryServiceRequestMock)
       .calledWith(substrateServiceMock.api, REQUEST_ID)
       .mockReturnValue(SUBSTRATE_RESULT);
-    
+
     when(elasticsearchServiceMock.search.mockReturnValue(ES_RESULT))
       .calledWith(CALLED_WITH)
       .mockReturnValue(ES_RESULT);

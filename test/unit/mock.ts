@@ -17,6 +17,8 @@ import { CountryService } from '../../src/endpoints/location/country.service';
 import { EscrowService } from '../../src/endpoints/escrow/escrow.service';
 import { StateService } from '../../src/endpoints/location/state.service';
 
+export function mockFunction(args){} // eslint-disable-line
+
 export type MockType<T> = {
     [P in keyof T]?: jest.Mock<{}>; // eslint-disable-line
 };
@@ -73,15 +75,17 @@ export const cacheMockFactory: () => MockType<CacheManager> = jest.fn(() => ({
   del: jest.fn(),
 }));
 
-export const cachesServiceMockFactory: () => MockType<CachesService> = jest.fn(() => ({
-  getLastBlock: jest.fn(),
-  setLastBlock: jest.fn(),
-}));
+export const cachesServiceMockFactory: () => MockType<CachesService> = jest.fn(
+  () => ({
+    getLastBlock: jest.fn(),
+    setLastBlock: jest.fn(),
+  }),
+);
 
 export const substrateServiceMockFactory: () => MockType<SubstrateService> = jest.fn(() => ({
-  onModuleInit: jest.fn(),
-  startListen: jest.fn(),
-  stopListen: jest.fn(),
+    onModuleInit: jest.fn(),
+    startListen: jest.fn(),
+    stopListen: jest.fn(),
 }));
 
 export const ethereumServiceMockFactory: () => MockType<EthereumService> = jest.fn(() => ({
