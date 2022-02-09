@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { OrderFailedCommand } from './order-failed.command';
 import { ethers } from 'ethers';
 import { EscrowService } from '../../../../../common/modules/escrow/escrow.service';
-import { refundOrder, SubstrateService } from '../../../../../common';
+import { setOrderRefunded, SubstrateService } from '../../../../../common';
 
 @Injectable()
 @CommandHandler(OrderFailedCommand)
@@ -19,21 +19,22 @@ export class OrderFailedHandler implements ICommandHandler<OrderFailedCommand> {
     await this.logger.log('OrderFailed!');
 
     const order = command.orders;
-    order.dna_sample_tracking_id = ethers.utils.toUtf8String(
-      order.dna_sample_tracking_id,
-    );
-    order.additional_prices[0].value =
-      Number(order.additional_prices[0].value) / 10 ** 18;
-    order.additional_prices[0].component = ethers.utils.toUtf8String(
-      order.additional_prices[0].component,
-    );
-    order.prices[0].value = Number(order.prices[0].value) / 10 ** 18;
-    order.prices[0].component = ethers.utils.toUtf8String(
-      order.prices[0].component,
-    );
+    order.additional_prices[0].value = Number(
+      order.additional_prices[0].value
+        .toString()
+        .split(',')
+        .join('')
+      ) / 10 ** 18;
+
+    order.prices[0].value = Number(
+      order.prices[0].value
+        .toString()
+        .split(',')
+        .join('')
+      ) / 10 ** 18;
 
     await this.escrowService.refundOrder(order.id);
-    await refundOrder(
+    await setOrderRefunded(
       this.substrateService.api,
       this.substrateService.pair,
       order.id,
