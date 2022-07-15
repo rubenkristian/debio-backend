@@ -33,7 +33,7 @@ describe('Cloud Controller (e2e)', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         CloudStorageModule,
-        GCloudSecretManagerModule.withConfig(process.env.PARENT),
+        GCloudSecretManagerModule.withConfig(process.env.GCS_PARENT),
       ],
     })
       .overrideProvider(GCloudSecretManagerService)

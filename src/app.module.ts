@@ -34,7 +34,7 @@ require('dotenv').config(); // eslint-disable-line
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    GCloudSecretManagerModule.withConfig(process.env.PARENT),
+    GCloudSecretManagerModule.withConfig(process.env.GCS_PARENT),
     TypeOrmModule.forRootAsync({
       inject: [GCloudSecretManagerService],
       useFactory: async (

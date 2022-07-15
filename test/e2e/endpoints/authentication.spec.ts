@@ -43,7 +43,7 @@ describe('Authentication Controller (e2e)', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        GCloudSecretManagerModule.withConfig(process.env.PARENT),
+        GCloudSecretManagerModule.withConfig(process.env.GCS_PARENT),
         JwtModule.register({
           signOptions: {
             expiresIn: '5s',

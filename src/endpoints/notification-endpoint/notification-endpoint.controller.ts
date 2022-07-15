@@ -30,7 +30,7 @@ export class NotificationEndpointController {
 
   @Put('set-read/:notification_id')
   @ApiParam({ name: 'notification_id' })
-  @ApiOperation({ description: 'update data notification to hasbeen read.' })
+  @ApiOperation({ description: 'update data notification to has been read.' })
   @ApiResponse({
     status: 200,
     schema: {
@@ -59,7 +59,7 @@ export class NotificationEndpointController {
 
   @Put('set-bulk-read/:to_id')
   @ApiParam({ name: 'to_id' })
-  @ApiOperation({ description: 'set all notification receiver hasbeed read' })
+  @ApiOperation({ description: 'set all notification receiver has beed read' })
   @ApiResponse({
     status: 200,
     schema: {
