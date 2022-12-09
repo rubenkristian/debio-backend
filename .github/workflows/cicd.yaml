@@ -100,7 +100,7 @@ jobs:
           fetch-depth: 0
       - name: Release
         id: release
-        uses: google-github-actions/release-please-action@44c30b36230f7335e5da53e297d931807ccea116
+        uses: google-github-actions/release-please-action@af1990728f970ad54c88e130c02a1521988127a2
         with:
           token: ${{ secrets.PAT }}
           fork: true
