@@ -1,6 +1,6 @@
 import { keyList } from '@common/secrets';
 import { GCloudSecretManagerService } from '@debionetwork/nestjs-gcloud-secret-manager';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios, { AxiosResponse } from 'axios';
 import { Repository } from 'typeorm';
@@ -31,7 +31,7 @@ export class MyriadService {
       );
       return res.data.status;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -49,7 +49,7 @@ export class MyriadService {
 
       return res.data;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -84,7 +84,7 @@ export class MyriadService {
 
       return res.data;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -142,7 +142,7 @@ export class MyriadService {
         message: 'account not found',
       };
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -182,7 +182,7 @@ export class MyriadService {
       const content: ContentInterface[] = res.data;
       return content;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -214,7 +214,7 @@ export class MyriadService {
 
       return res.data;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -232,7 +232,7 @@ export class MyriadService {
 
       return res.data;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 
@@ -276,7 +276,7 @@ export class MyriadService {
 
       return res;
     } catch (err) {
-      return err.response.data;
+      throw new HttpException(err.response.data, err.response.status);
     }
   }
 }
